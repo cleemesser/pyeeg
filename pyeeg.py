@@ -202,43 +202,8 @@ def in_range(Template, Scroll, Distance):
 	
 	"""
 	
-	for i in range(0,  len(Template)):
-			if abs(Template[i] - Scroll[i]) > Distance:
-			     return False
-	return True
-	""" Desperate code, but do not delete
-	def bit_in_range(Index): 
-		if abs(Scroll[Index] - Template[Bit]) <=  Distance : 
-			print "Bit=", Bit, "Scroll[Index]", Scroll[Index], "Template[Bit]",\
-			 Template[Bit], "abs(Scroll[Index] - Template[Bit])",\
-			 abs(Scroll[Index] - Template[Bit])
-			return Index + 1 # move 
-
-	Match_No_Tail = range(0, len(Scroll) - 1) # except the last one 
-#	print Match_No_Tail
-
-	# first compare Template[:-2] and Scroll[:-2]
-
-	for Bit in xrange(0, len(Template) - 1): # every bit of Template is in range of Scroll
-		Match_No_Tail = filter(bit_in_range, Match_No_Tail)
-		print Match_No_Tail
-		
-	# second and last, check whether Template[-1] is in range of Scroll and 
-	#	Scroll[-1] in range of Template
-
-	# 2.1 Check whether Template[-1] is in the range of Scroll
-	Bit = - 1
-	Match_All =  filter(bit_in_range, Match_No_Tail)
-	
-	# 2.2 Check whether Scroll[-1] is in the range of Template
-	# I just write a  loop for this. 
-	for i in Match_All:
-		if abs(Scroll[-1] - Template[i] ) <= Distance:
-			Match_All.remove(i)
-	
-	
-	return len(Match_All), len(Match_No_Tail)
-	"""
+	return all(
+	    abs(Template[i] - Scroll[i]) <= Distance for i in range(len(Template)))
 
 def bin_power(X,Band,Fs):
 	"""Compute power in each frequency bin specified by Band from FFT result of 
@@ -306,12 +271,7 @@ def first_order_diff(X):
 		Y = [x(2) - x(1) , x(3) - x(2), ..., x(N) - x(N-1)]
 		
 	"""
-	D=[]
-	
-	for i in xrange(1,len(X)):
-		D.append(X[i]-X[i-1])
-
-	return D
+	return [X[i]-X[i-1] for i in xrange(1,len(X))]
 
 def pfd(X, D=None):
 	"""Compute Petrosian Fractal Dimension of a time series from either two 
@@ -407,8 +367,8 @@ def hjorth(X, D = None):
 	M4 = 0;
 	for i in xrange(1, len(D)):
 		M4 += (D[i] - D[i - 1]) ** 2
-	M4 = M4 / n
-	
+	M4 /= n
+
 	return sqrt(M2 / TP), sqrt(float(M4) * TP / M2 / M2)	# Hjorth Mobility and Complexity
 
 def spectral_entropy(X, Band, Fs, Power_Ratio = None):
